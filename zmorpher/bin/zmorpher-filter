@@ -1,0 +1,24 @@
+#! /usr/bin/python3
+# zmorpher-filter
+# Last modified: 19 October 2018
+
+import sys, os, re
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from zmorpher import zMorpher
+
+morpher = zMorpher()
+for line in sys.stdin:
+	# Like zMorpher.stress_text() but without the cache and with debugging markup
+	for m in re.findall(r'([\W-]*)([\w-]+)([\W-]*)', line, re.DOTALL):
+		word = m[1]
+		possibilities = set()
+		for parse in morpher.parse(word):
+			possibilities.add(parse.stressed(all=True))
+		if len(possibilities) == 1:
+			word = possibilities.pop()
+		elif len(possibilities) == 0:
+			word = "*%s*" % word
+		else:
+			word = str(possibilities)
+		sys.stdout.write("%s%s%s" % (m[0], word, m[2]))
+

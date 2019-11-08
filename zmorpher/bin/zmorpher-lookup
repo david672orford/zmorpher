@@ -1,0 +1,29 @@
+#! /usr/bin/python3
+# zmorpher-lookup
+
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from zmorpher import zMorpher
+
+import unicodedata
+
+def visible_length(unistr):
+    '''Returns the number of printed characters in a Unicode string.'''
+    return len([char for char in unistr if unicodedata.combining(char) == 0])
+
+morpher = zMorpher()
+for word in sys.argv[1:]:
+	print("== %s ==" % word)
+	for parse in morpher.parse(word):
+		print("  %s (%s)" % (parse.normal_form, parse.normalized.tag.POS))
+		if False:
+			print("  %s" % str(parse))
+			print("  %s" % (str(parse._lexeme.paradigm)))
+			print("  %s" % (str(parse._lexeme.stress_paradigm)))
+		for item in parse.lexeme:
+			word = item.stressed(all=True)
+			word += (" " * (12 - visible_length(word)))
+			print("    %s %s %s" % (word, item.tag, "<--" if item.tag == parse.tag else ""))
+		#gen = parse.inflect({'gent','plur'})
+		#print("   Genitive plural: %s {%s}" % (gen.word, str(gen.tag)))
+

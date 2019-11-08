@@ -1,0 +1,61 @@
+=============================================================================
+ Parsers and Inflectors
+=============================================================================
+
+python3-inflect
+	* In Ubuntu repository
+	* English only
+	* Can pluralize nouns and verbs
+	* Does not seem to be able to conjugate verbs other than singular-plural
+
+Nodebox Linuguistics
+	* Not in Ubuntu repository
+	* Can do "shallow parsing" of English (disanbiguation?)
+	* Can conjugate verbs
+
+NLTK
+	* In Ubuntu repository
+	* Unclear which languages are supported
+	* Written in Python
+
+pattern.en
+	*
+	* English only
+	* Can conjugate verbs
+
+Link Grammar
+	* Old version in Ubuntu repository
+	* English, Russian, other languages
+	* Russian morphology based on AOT
+
+ADP-Pipeline
+	* English, Russian, other languages
+	* Seems to depend on Java
+
+Spacy (http://spacy.io/docs/)
+	* English, no Russian
+
+=============================================================================
+ Russian Morphology
+=============================================================================
+
+Yurta
+	* Perl scripts to conver Zaliznyak's dictionary
+	* Seems to contain implementation of the inflection paradigms which
+	  might be usable with oDict
+	* Downloadable tables of words, ending and stress sets
+
+AOT
+	* Expanded version of Zaliznyak's dictionary
+	* Is a downloadable table similiar to that of Yurta
+
+oDict
+	* Expanded version of Zaliznyak's dictionary
+	* No implementation of the inflection paradigms
+
+Wikidicionary
+	* Uses Zaliznyak's paradigm codes
+	* May use other systems too
+	* Not clear where the paradigm implemention code is
+
+

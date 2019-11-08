@@ -1,0 +1,222 @@
+#! /usr/bin/python3
+# zmorpher-db-loader
+# Last modified: 19 October 2018
+
+import os, sys, re
+import codecs
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from zmorpher import dict_filename, session, Base, zMorpherDbLexeme, zMorpherDbSuffixParadigm, zMorpherDbStressParadigm
+
+#datadir = "zaliznyak_dict_v1"
+datadir = "zaliznyak_dict"
+
+def load_zaliz_lexemas():
+	# Convert Zaliznyak's part of speach code to the cooresponding Opencorpa code
+	pos_xlate = {
+		u'с': 'NOUN',
+		u'п': 'ADJF',				# adjective (full form)
+		u'мс': 'NPRO',				# nominitive pronoun
+		u'мс-п': 'ADJF',			# adjectival pronoun
+		u'г': 'INFN',				# verb (infinitive form)
+		u'н': 'ADVB',				# наречие
+		u'числ': 'NUMR',			# cardinal number
+		u'числ-п': 'ADJF',			# ordinal number
+		u'вводн': 'parenthesis',
+		u'межд': 'INTJ',
+		u'предик': 'PRED',
+		u'предл': 'PREP',
+		u'союз': 'CONJ',
+		u'сравн': 'COMP',
+		u'част': 'PRCL',			# particle
+	}
+
+	pos_tags = {
+		u'мс-п': set(['Apro']),
+		}
+
+	f = codecs.open(os.path.join(datadir, "zaliz2.adb"), "r", "utf-8")
+	lexeme_id = 0
+	for line in f:
+		if line.startswith("#"):		# skip comments
+			continue
+
+		attributes = line.rstrip().split("\t")
+		assert attributes[0].startswith(u"с:")
+
+		lemma = None
+		pos = None
+		stresses = None
+
+		# Morphology
+		paradigm_id = None
+		base_len = None
+		stress_paradigm_id = None
+
+		# Nouns
+		gender = None
+		animate = None
+
+		# Verbs
+		transitive = None
+		aspect = None
+
+		# Notes
+		definition = None
+		phrases = None
+
+		# Word tags
+		tags = set()
+
+		for attribute in attributes:
+			if ":" in attribute:
+				name, value = attribute.split(":", 1)
+
+				if name == u"с":				# base form of word
+					lemma = value
+				elif name == u"т":				# part of speach
+					pos = pos_xlate[value]
+					tags = pos_tags.get(value, set())
+				elif name == u"у":				# stress in head form 
+					stresses = () if value == "0" else map(int, value.split("."))
+
+				# Morphology
+				elif name == u"б":				# length of unchanging stem
+					base_len = int(value)
+				elif name == u"ио":				# form endings
+					paradigm_id = int(value)
+				elif name == u"иу":				# form stress positions
+					stress_paradigm_id = int(value)
+	
+				# Attributes of Nouns
+				elif name == u"р":
+					#assert value == u'м' or value == u'ж' or value == u'с', "%s: %s" % (lemma, value)
+					gender = value
+				elif name == u"о":
+					assert value == u"о" or value == u"н" or value == u"но"	# FIXME
+					animate = (value == u"о")
+	
+				# Attributes of verbs
+				elif name == u"гп":
+					assert value == u"п" or value == u"нп"
+					transitive = (value == u"п")
+				elif name == u"гв":
+					aspect = value
+
+				# Notes
+				elif name == u"з":
+					definition = value
+				elif name == u"фр":
+					phrases = value
+
+				else:
+					pass
+
+		if pos == "INFN":		# verb
+			if aspect == 'нсв':
+				tags.add('impf')
+			elif aspect == 'св':
+				tags.add('perf')
+			if transitive:
+				tags.add('tran')
+			else:	
+				tags.add('intr')
+		elif pos == "NOUN":
+			if gender == 'м':
+				tags.add('masc')
+			elif gender == 'ж':
+				tags.add('femn')
+			elif gender == 'с':
+				tags.add('neut')
+			if animate == True:
+				tags.add('anim')
+			else:
+				tags.add('inan')
+			if paradigm_id == 1:
+				tags.add('Fixd')
+
+		# Nix some confusing stuff
+		if definition and "название буквы" in definition:
+			continue
+		if lemma == "я" and definition and definition == "сознающая себя сущность":
+			continue
+		if lemma == "вод":			# mystery word
+			continue
+
+		# Create a word object from the information created above and
+		# insert it into the database.
+		w = zMorpherDbLexeme(
+			id                 = lexeme_id,
+			lemma              = lemma,
+			stem               = lemma[:base_len],
+			pos                = pos,
+			stresses           = stresses,
+			paradigm_id        = paradigm_id,
+			base_len           = base_len,
+			stress_paradigm_id = stress_paradigm_id,
+			tag                = frozenset(tags),
+			definition         = definition,
+			phrases            = phrases,
+			)
+		session.add(w)
+		lexeme_id += 1
+		if (lexeme_id % 5000) == 0:
+			session.commit()
+	f.close()
+	session.commit()
+	
+def load_zaliz_suffix_paradigms():
+	f = codecs.open(os.path.join(datadir, "zaliz2.suf"), "r", "utf-8")
+	for line in f:
+		if line.startswith("#"):
+			continue
+		attributes = line.rstrip().split("\t")
+		forms = []
+		for form in attributes[2].split(";"): 			# "Точка с запятой разделяет словоформы,"
+			variants = form.split(",")					# "запятая разделяет разные варианты внутри одной словоформы"
+			forms.append(tuple(variants))
+		p = zMorpherDbSuffixParadigm(
+			id = int(attributes[0]),
+			suffixes = tuple(forms)
+			)
+		session.add(p)
+	f.close()
+	session.commit()
+	
+def load_zaliz_stress_paradigms():
+	f = codecs.open(os.path.join(datadir, "zaliz2.acc"), "r", "utf-8")
+	for line in f:
+		if line.startswith("#"):
+			continue
+		attributes = line.rstrip().split("\t")
+		forms = []
+		for form in attributes[2].split(";"):			 # "Точка с запятой разделяет словоформы,"
+			variants = []
+			for variant in form.split(","):				 # "запятая разделяет разные варианты внутри одной словоформы,"
+				stresses = []
+				for stress in variant.split("."):		 # "точка показывает дополнительное ударение,"
+					stress = stress.replace("-","")		 # "дефис означает затруднительность образования формы."
+					if stress == "":
+						stress = None
+					else:
+						stress = int(stress)
+					stresses.append(stress)
+				variants.append(tuple(stresses))
+			forms.append(variants)
+		p = zMorpherDbStressParadigm(id = int(attributes[0]), places = tuple(forms))
+		session.add(p)
+	f.close()
+	session.commit()
+
+if os.path.exists("zmorpher/%s" % dict_filename):
+	os.unlink("zmorpher/%s" % dict_filename)
+
+print("Creating database...")
+Base.metadata.create_all()
+print("Loading suffix paradigms...")
+load_zaliz_suffix_paradigms()
+print("Loading stress paradigms...")
+load_zaliz_stress_paradigms()
+print("Loading lexemas...")
+load_zaliz_lexemas()
+print("Done.")
+

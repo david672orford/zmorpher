@@ -1,0 +1,16 @@
+#! /usr/bin/python3
+# pymorphy2-lookup
+
+import sys
+import pymorphy2
+
+morpher = pymorphy2.MorphAnalyzer()
+for word in sys.argv[1:]:
+	print("== %s ==" % word)
+	for parse in morpher.parse(word):
+		print("  %s (%s)" % (parse.normal_form, parse.normalized.tag.POS))
+		for item in parse.lexeme:
+			print("    %-12s %s %s" % (item.word, item.tag, "<--" if item.tag == parse.tag else ""))
+		#gen = parse.inflect({'gent','plur'})
+		#print("   Genitive plural: %s {%s}" % (gen.word, str(gen.tag)))
+
