@@ -6,10 +6,10 @@ electronic version of Andrey Zalizniak's *Грамматический слов�
 языка*.
 
 The zmorpher directory contains:
-# A modified copy of the Jurta code
-# A Python program to load the paradigm it produces into a Sqlite database
-# A Python library for looking up words in the Sqlite database
-# A few simple programs to demonstrate the library
+1. A modified copy of the Jurta code
+2. A Python program to load the paradigm it produces into a Sqlite database
+3. A Python library for looking up words in the Sqlite database
+4. A few simple programs to demonstrate the library
 
 Example command:
 
