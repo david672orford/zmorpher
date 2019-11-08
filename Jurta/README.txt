@@ -1,17 +1,14 @@
 == Russian Inflector from Jurta.org ==
 
-This Russian inflector was posted to the blog Jurta in the article:
+This Russian inflector was written by Yuriy Linkov and posted blog:
 
-  Построение полных парадигм слов русского
-  языка на базе грамматического словаря
+  Построение полных парадигм слов русского языка на базе грамматического словаря
+  <http://www.jurta.org/ru/nlp/rus/zaliz>
 
 == Subdirectory "original" ==
 
-This directory contains the original data and program files from:
-
-  http://www.jurta.org/ru/nlp/rus/zaliz
-
-Unmodified original files from Jurta.org:
+This directory contains the original data and program files from the
+article:
 
   zaliz.adb
     This is an intermediate file produced by running zaliz.txt through
@@ -20,7 +17,7 @@ Unmodified original files from Jurta.org:
     These are the final product. The adb file lists the words and refers
 	to the suffixes in the suf file and the stress patterns in the acc file.
     Note that these files are dated 2007 and do not reflect the bug fix
-    which Juri refers to in his answer of 23 August 2013 to a comment
+    which Juri Linkov refers to in his answer of 23 August 2013 to a comment
 	on his blog posting.
   txt2adb.pl
     Converts zaliz.txt to zaliz.adb
@@ -62,13 +59,13 @@ Reconstructed data files:
     words. It can be reproduced using the command:
     $ cut -f1 zaliz2.adb | cut -c3- | LC_COLLATE=C uniq >zaliz.lst
 
-The run1.sh script sets up the proper environment and processes zaliz.txt and
-z.x.subpatch to produce zaliz.adb.
+We provide the run1.sh script which sets up the proper environment and
+processes zaliz.txt and z.x.subpatch to produce zaliz.adb.
 
-The run2.sh script sets up the proper environment and processes zaliz.adb
-and zaliz.lst to produce zaliz2.adb, zaliz2.suf, and zaliz2.acc. In the
-interests of reproducibility the randomization of Perl hash keys has been
-disabled.
+We also provide run2.sh script which sets up the proper environment and
+processes zaliz.adb and zaliz.lst to produce zaliz2.adb, zaliz2.suf, and
+zaliz2.acc. In the interests of reproducibility, the randomization of Perl
+hash keys is disabled.
 
 The files produced by run2.sh are somewhat different from those on the website.
 This is because the code on the website has had bugs fixed (as described in
@@ -76,8 +73,8 @@ the comments, but the output files on the site have not been updated.
 
 == Documentation ==
 
-The documentation of the file formats is very hard to read because it is
-arranged in tables without visible borders. Thus, the entries tend to run
+The documentation of the file formats on Jurta is very hard to read because it
+is arranged in tables without visible borders. Thus, the entries tend to run
 together. The reader must parse the text in order to separate them. Therefor I
 have downloaded the page, extracted that part, and added table cell borders.
 The result is in:

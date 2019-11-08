@@ -1,4 +1,45 @@
 =============================================================================
+ Zalizniak's Dictionary
+=============================================================================
+
+Scans of Zalizniak's Dictionary
+	../Library/Dictionaries/zaliznyak.djvu
+	http://zaliznyak-dict.narod.ru/
+	http://shimons.narod.ru/dict.html (восмая ссылка)
+
+Electronic Text Versions of Zalizniak's Dictionary:
+	http://starling.rinet.ru/download/dicts.EXE
+	https://github.com/morpher-ru/zaliznyak
+	http://odict.ru
+
+Description of format on pages 68--142 adapted to use the symbols from
+the Electronic Text Versions:
+	http://odict.ru/pomety/
+
+=============================================================================
+ Russian Morphology Implementations
+=============================================================================
+
+Yurta
+	* Perl scripts to conver Zaliznyak's dictionary
+	* Seems to contain implementation of the inflection paradigms which
+	  might be usable with oDict
+	* Downloadable tables of words, ending and stress sets
+
+AOT
+	* Expanded version of Zaliznyak's dictionary
+	* Is a downloadable table similiar to that of Yurta
+
+oDict
+	* Expanded version of Zaliznyak's dictionary
+	* No implementation of the inflection paradigms
+
+Wikidicionary
+	* Uses Zaliznyak's paradigm codes
+	* May use other systems too
+	* Not clear where the paradigm implemention code is
+
+=============================================================================
  Parsers and Inflectors
 =============================================================================
 
@@ -34,28 +75,5 @@ ADP-Pipeline
 
 Spacy (http://spacy.io/docs/)
 	* English, no Russian
-
-=============================================================================
- Russian Morphology
-=============================================================================
-
-Yurta
-	* Perl scripts to conver Zaliznyak's dictionary
-	* Seems to contain implementation of the inflection paradigms which
-	  might be usable with oDict
-	* Downloadable tables of words, ending and stress sets
-
-AOT
-	* Expanded version of Zaliznyak's dictionary
-	* Is a downloadable table similiar to that of Yurta
-
-oDict
-	* Expanded version of Zaliznyak's dictionary
-	* No implementation of the inflection paradigms
-
-Wikidicionary
-	* Uses Zaliznyak's paradigm codes
-	* May use other systems too
-	* Not clear where the paradigm implemention code is
 
 
